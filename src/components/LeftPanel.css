@@ -1,0 +1,32 @@
+.left-panel {
+  position: fixed;
+  left: 0;
+  width: 50%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 3rem;
+  background-color: var(--primary-color);
+}
+
+.tagline {
+  font-family: var(--font-family);
+  font-weight: 300;
+  font-size: 36px;
+  line-height: 1.2;
+  color: var(--text-color);
+  max-width: 90%;
+}
+
+@media (max-width: 1200px) {
+  .tagline {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tagline {
+    font-size: 22px;
+  }
+}
