@@ -524,13 +524,11 @@
   align-items: center;
   justify-content: center;
   color: var(--text-color);
-  transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
   border-radius: 50%;
   z-index: 1003;
   pointer-events: auto;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  visibility: hidden;
 }
 
 .modal-close-button:hover {
@@ -610,7 +608,7 @@
 }
 
 .modal-close-button:active {
-  transform: scale(0.95);
+  /* Remove this as it's now handled by Framer Motion whileTap */
 }
 
 .modal-close-button svg {

@@ -50,12 +50,21 @@ const ProjectCard = ({ project, selectedProject, onProjectClick }: {
     initial: {
       backgroundColor: "rgba(0, 0, 0, 0)",
       borderColor: "rgba(0, 0, 0, 0)",
+      scale: 1,
     },
     hover: {
       backgroundColor: "rgba(0, 0, 0, 0.04)",
       borderColor: "rgba(0, 0, 0, 0.1)",
+      scale: 1.01,
       transition: {
-        duration: 0.2,
+        duration: 0.3,
+        ease: [0.16, 1, 0.3, 1],
+      },
+    },
+    tap: {
+      scale: 0.98,
+      transition: {
+        duration: 0.1,
         ease: "easeOut",
       },
     },
@@ -68,6 +77,7 @@ const ProjectCard = ({ project, selectedProject, onProjectClick }: {
       variants={cardVariants}
       initial="initial"
       whileHover="hover"
+      whileTap="tap"
       onClick={() => onProjectClick(project.id)}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -238,16 +248,11 @@ const RightPanel = () => {
           // 24px offset from top and right edge
           button.style.top = `${imageRect.top + 24}px`;
           button.style.right = `${window.innerWidth - imageRect.right + 24}px`;
-          // Show button only after position is set
-          button.style.opacity = '1';
-          button.style.visibility = 'visible';
         } else {
           // Fallback to modal position if image not found
           const modalRect = modalRef.current.getBoundingClientRect();
           button.style.top = `${modalRect.top + 24}px`;
           button.style.right = `${window.innerWidth - modalRect.right + 24}px`;
-          button.style.opacity = '1';
-          button.style.visibility = 'visible';
         }
       }
     };
@@ -317,18 +322,7 @@ const RightPanel = () => {
         if (imageElement) {
           imageElement.removeEventListener('load', updateButtonPosition);
         }
-        // Hide button when modal closes
-        if (closeButtonRef.current) {
-          closeButtonRef.current.style.opacity = '0';
-          closeButtonRef.current.style.visibility = 'hidden';
-        }
       };
-    } else {
-      // Hide button when modal is closed
-      if (closeButtonRef.current) {
-        closeButtonRef.current.style.opacity = '0';
-        closeButtonRef.current.style.visibility = 'hidden';
-      }
     }
   }, [modalProject]);
 
@@ -369,14 +363,14 @@ const RightPanel = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{
-                  duration: 0.3,
+                  duration: 0.4,
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 onClick={() => setModalProject(null)}
               />
               
               {/* Close button - positioned outside modal to avoid covering content */}
-              <button
+              <motion.button
                 ref={closeButtonRef}
                 className={`modal-close-button ${
                   modalProject === 'x-heal' ? 'modal-close-button-xheal' : 
@@ -384,6 +378,16 @@ const RightPanel = () => {
                 }`}
                 onClick={() => setModalProject(null)}
                 aria-label="Close modal"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{
+                  type: "spring",
+                  bounce: 0.5,
+                  duration: 0.5,
+                }}
               >
                 <svg
                   width="24"
@@ -400,7 +404,7 @@ const RightPanel = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </button>
+              </motion.button>
               
               {/* Scroll progress bar - positioned outside modal */}
               {progressBarStyle && (
@@ -409,12 +413,14 @@ const RightPanel = () => {
                     modalProject === 'x-heal' ? 'modal-scroll-progress-xheal' : 
                     modalProject === 'mushroommate' ? 'modal-scroll-progress-mushroommate' : ''
                   }`}
-                  initial={{ scaleY: 0 }}
-                  animate={{ scaleY: 1 }}
-                  exit={{ scaleY: 0 }}
+                  initial={{ scaleY: 0, opacity: 0 }}
+                  animate={{ scaleY: 1, opacity: 1 }}
+                  exit={{ scaleY: 0, opacity: 0 }}
                   transition={{
-                    duration: 0.3,
-                    ease: [0.16, 1, 0.3, 1],
+                    type: "spring",
+                    bounce: 0.25,
+                    duration: 0.5,
+                    opacity: { duration: 0.3 },
                   }}
                   style={progressBarStyle}
                 >
@@ -431,8 +437,9 @@ const RightPanel = () => {
                     }}
                     transition={{
                       type: "spring",
-                      stiffness: 300,
-                      damping: 30,
+                      stiffness: 400,
+                      damping: 35,
+                      mass: 0.8,
                     }}
                   />
                 </motion.div>
@@ -442,12 +449,29 @@ const RightPanel = () => {
               <motion.div
                 ref={modalRef}
                 className={`modal-container ${modalProject === 'x-heal' ? 'modal-container-xheal' : ''}`}
-                initial={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
-                animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
-                exit={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
+                initial={{ 
+                  opacity: 0, 
+                  scale: 0.85, 
+                  x: "-50%", 
+                  y: "-48%",
+                }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: 1, 
+                  x: "-50%", 
+                  y: "-50%",
+                }}
+                exit={{ 
+                  opacity: 0, 
+                  scale: 0.9, 
+                  x: "-50%", 
+                  y: "-48%",
+                }}
                 transition={{
-                  duration: 0.4,
-                  ease: [0.16, 1, 0.3, 1],
+                  type: "spring",
+                  bounce: 0.25,
+                  duration: 0.6,
+                  opacity: { duration: 0.3 },
                 }}
                 style={{
                   position: "fixed",
