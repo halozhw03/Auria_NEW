@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue, useMotionTemplate } from 'framer-motion';
+import gsap from 'gsap';
 import './RightPanel.css';
 
 // Project card component with spotlight effect
@@ -123,7 +124,7 @@ const ProjectCard = ({ project, selectedProject, onProjectClick }: {
   );
 };
 
-const RightPanel = () => {
+const RightPanel = ({ isNavOpen, onCloseNav }: { isNavOpen: boolean; onCloseNav: () => void }) => {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [modalProject, setModalProject] = useState<string | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -131,6 +132,65 @@ const RightPanel = () => {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const modalContentRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+
+  const navigationItems = [
+    { id: 'about', label: 'About Me' },
+    { id: 'projects', label: 'Projects' },
+    { id: 'contact', label: 'Contact' }
+  ];
+
+  // GSAP animation for compact navigation bar
+  useEffect(() => {
+    if (navRef.current) {
+      if (isNavOpen) {
+        // Elastic slide-in from left with scale
+        gsap.fromTo(
+          navRef.current,
+          { 
+            x: -100,
+            opacity: 0,
+            scale: 0.9
+          },
+          { 
+            x: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.7,
+            ease: 'back.out(1.4)'
+          }
+        );
+
+        // Stagger animation for navigation items
+        gsap.fromTo(
+          navRef.current.querySelectorAll('.compact-nav-item'),
+          { x: -30, opacity: 0 },
+          { 
+            x: 0, 
+            opacity: 1, 
+            duration: 0.4,
+            stagger: 0.08,
+            delay: 0.2,
+            ease: 'power2.out'
+          }
+        );
+      } else if (navRef.current) {
+        // Slide out to left with scale when closing
+        gsap.to(navRef.current, { 
+          x: -100,
+          opacity: 0,
+          scale: 0.9,
+          duration: 0.4,
+          ease: 'power2.in'
+        });
+      }
+    }
+  }, [isNavOpen]);
+
+  const handleNavItemClick = (itemId: string) => {
+    console.log(`Navigating to: ${itemId}`);
+    // Keep the nav open, just handle the click
+  };
 
   const projects = [
     {
@@ -337,6 +397,131 @@ const RightPanel = () => {
       }}
     >
       <motion.div className="right-content" layout>
+        {/* Oval Navigation Bar with integrated avatar */}
+        <AnimatePresence mode="wait">
+          {isNavOpen && (
+            <motion.div
+              ref={navRef}
+              initial={{ opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'fixed',
+                bottom: '2.5rem',
+                left: '2.5rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                borderRadius: '60px',
+                padding: '0.5rem',
+                paddingLeft: '0.5rem',
+                paddingRight: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+                zIndex: 100,
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                willChange: 'transform, opacity'
+              }}
+            >
+              {/* Avatar circle integrated in the nav bar */}
+              <div
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  backgroundColor: '#FFFFFF',
+                  flexShrink: 0,
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  cursor: 'pointer'
+                }}
+                onClick={onCloseNav}
+              >
+                <img 
+                  src="/images/head.png" 
+                  alt="Auria Zhang" 
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center 20%'
+                  }}
+                />
+              </div>
+
+              {/* Navigation items */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {navigationItems.map((item, index) => (
+                  <motion.button
+                    key={item.id}
+                    className="compact-nav-item"
+                    onClick={() => handleNavItemClick(item.id)}
+                    whileHover={{ 
+                      scale: 1.05,
+                      backgroundColor: 'rgba(0, 0, 0, 0.08)'
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      padding: '0.75rem 1.25rem',
+                      borderRadius: '24px',
+                      border: 'none',
+                      backgroundColor: 'rgba(0, 0, 0, 0.03)',
+                      cursor: 'pointer',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '15px',
+                      fontWeight: 500,
+                      color: 'var(--text-color)',
+                      transition: 'all 0.2s ease',
+                      whiteSpace: 'nowrap',
+                      opacity: 0
+                    }}
+                  >
+                    {item.label}
+                  </motion.button>
+                ))}
+              </div>
+              
+              {/* Close button */}
+              <motion.button
+                onClick={onCloseNav}
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  border: 'none',
+                  backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-color)',
+                  flexShrink: 0
+                }}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 6L6 18M6 6L18 18"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div className="content-section" layout>
           <h2>Scroll to see my works</h2>
         </motion.div>

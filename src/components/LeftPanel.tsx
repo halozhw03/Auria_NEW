@@ -1,5 +1,6 @@
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import './LeftPanel.css';
 
 interface TextItem {
@@ -18,10 +19,11 @@ const textItems: TextItem[] = [
 // Characters used for scramble effect
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-const LeftPanel = () => {
+const LeftPanel = ({ onAvatarClick, isNavOpen }: { onAvatarClick: () => void; isNavOpen?: boolean }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [hoveredTextRef, setHoveredTextRef] = useState<HTMLDivElement | null>(null);
   const [scrambledTexts, setScrambledTexts] = useState<string[]>(textItems.map(item => item.text));
+  const avatarRef = useRef<HTMLDivElement>(null);
 
   // Motion values for smooth cursor tracking
   const cursorX = useMotionValue(0);
@@ -31,6 +33,113 @@ const LeftPanel = () => {
   const springConfig = { stiffness: 300, damping: 28, restDelta: 0.00001 };
   const x = useSpring(cursorX, springConfig);
   const y = useSpring(cursorY, springConfig);
+
+  // GSAP animations for avatar interactivity
+  useEffect(() => {
+    if (!avatarRef.current || isNavOpen) return;
+
+    const avatar = avatarRef.current;
+    
+    // Main continuous pulse animation with rotation
+    const pulseTimeline = gsap.timeline({ repeat: -1, repeatDelay: 1 });
+    pulseTimeline
+      .to(avatar, {
+        scale: 1.1,
+        rotate: 3,
+        duration: 0.8,
+        ease: 'power1.inOut'
+      })
+      .to(avatar, {
+        scale: 1,
+        rotate: -3,
+        duration: 0.8,
+        ease: 'power1.inOut'
+      })
+      .to(avatar, {
+        scale: 1.05,
+        rotate: 0,
+        duration: 0.8,
+        ease: 'power1.inOut'
+      })
+      .to(avatar, {
+        scale: 1,
+        rotate: 0,
+        duration: 0.8,
+        ease: 'power1.inOut'
+      });
+
+    // Floating animation (subtle up and down movement)
+    gsap.to(avatar, {
+      y: -8,
+      duration: 2,
+      ease: 'sine.inOut',
+      repeat: -1,
+      yoyo: true
+    });
+
+    // Hover animations
+    const handleMouseEnter = () => {
+      pulseTimeline.pause();
+      gsap.to(avatar, {
+        scale: 1.15,
+        rotate: 8,
+        duration: 0.4,
+        ease: 'back.out(2)'
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(avatar, {
+        scale: 1,
+        rotate: 0,
+        y: 0,
+        duration: 0.4,
+        ease: 'power2.out',
+        onComplete: () => {
+          pulseTimeline.play();
+          // Restart floating animation
+          gsap.to(avatar, {
+            y: -8,
+            duration: 2,
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true
+          });
+        }
+      });
+    };
+
+    // Click animation
+    const handleMouseDown = () => {
+      gsap.to(avatar, {
+        scale: 0.9,
+        duration: 0.15,
+        ease: 'power2.in'
+      });
+    };
+
+    const handleMouseUp = () => {
+      gsap.to(avatar, {
+        scale: 1.15,
+        duration: 0.3,
+        ease: 'back.out(4)'
+      });
+    };
+
+    avatar.addEventListener('mouseenter', handleMouseEnter);
+    avatar.addEventListener('mouseleave', handleMouseLeave);
+    avatar.addEventListener('mousedown', handleMouseDown);
+    avatar.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      pulseTimeline.kill();
+      gsap.killTweensOf(avatar);
+      avatar.removeEventListener('mouseenter', handleMouseEnter);
+      avatar.removeEventListener('mouseleave', handleMouseLeave);
+      avatar.removeEventListener('mousedown', handleMouseDown);
+      avatar.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isNavOpen]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
     if (!hoveredTextRef) return;
@@ -98,6 +207,28 @@ const LeftPanel = () => {
         damping: 30,
       }}
     >
+      {/* Avatar fixed in bottom left corner - hide when nav is open */}
+      <AnimatePresence>
+        {!isNavOpen && (
+          <motion.div 
+            ref={avatarRef}
+            className="avatar-container" 
+            onClick={onAvatarClick} 
+            style={{ cursor: 'pointer' }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <img 
+              src="/images/head.png" 
+              alt="Auria Zhang" 
+              className="avatar-image"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="text-list-container">
         {textItems.map((item, index) => (
           <div

@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import LeftPanel from './components/LeftPanel';
 import RightPanel from './components/RightPanel';
 import './App.css';
 
 function App() {
+  const [isNavOpen, setIsNavOpen] = useState(false);
   useEffect(() => {
     // Prevent horizontal scrolling/swiping
     const preventHorizontalScroll = (e: TouchEvent | WheelEvent) => {
@@ -73,8 +74,8 @@ function App() {
         damping: 30,
       }}
     >
-      <LeftPanel />
-      <RightPanel />
+      <LeftPanel onAvatarClick={() => setIsNavOpen(!isNavOpen)} isNavOpen={isNavOpen} />
+      <RightPanel isNavOpen={isNavOpen} onCloseNav={() => setIsNavOpen(false)} />
     </motion.div>
   );
 }
