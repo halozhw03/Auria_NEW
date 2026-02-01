@@ -517,6 +517,76 @@
   box-shadow: 0 2px 12px rgba(109, 174, 3, 0.4);
 }
 
+/* X-Heal specific styles for progress bar and close button - Pink */
+.modal-close-button-xheal:hover {
+  color: #e91e63 !important;
+  background-color: rgba(233, 30, 99, 0.3) !important;
+  box-shadow: 0 2px 12px rgba(233, 30, 99, 0.4) !important;
+}
+
+.modal-scroll-progress-bar-xheal {
+  background: linear-gradient(
+    180deg,
+    rgba(233, 30, 99, 0.4) 0%,
+    rgba(233, 30, 99, 0.7) 30%,
+    rgba(233, 30, 99, 0.85) 50%,
+    rgba(233, 30, 99, 0.7) 70%,
+    rgba(233, 30, 99, 0.4) 100%
+  ) !important;
+  box-shadow: 
+    0 0 12px rgba(233, 30, 99, 0.4),
+    inset 0 0 8px rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-scroll-progress-xheal:hover .modal-scroll-progress-bar-xheal {
+  background: linear-gradient(
+    180deg,
+    rgba(233, 30, 99, 0.6) 0%,
+    rgba(233, 30, 99, 0.85) 30%,
+    rgba(233, 30, 99, 1) 50%,
+    rgba(233, 30, 99, 0.85) 70%,
+    rgba(233, 30, 99, 0.6) 100%
+  ) !important;
+  box-shadow: 
+    0 0 16px rgba(233, 30, 99, 0.6),
+    inset 0 0 8px rgba(255, 255, 255, 0.15) !important;
+}
+
+/* MushRoommate specific styles for progress bar and close button - Green */
+.modal-close-button-mushroommate:hover {
+  color: #6DAE03 !important;
+  background-color: rgba(109, 174, 3, 0.3) !important;
+  box-shadow: 0 2px 12px rgba(109, 174, 3, 0.4) !important;
+}
+
+.modal-scroll-progress-bar-mushroommate {
+  background: linear-gradient(
+    180deg,
+    rgba(109, 174, 3, 0.4) 0%,
+    rgba(109, 174, 3, 0.7) 30%,
+    rgba(109, 174, 3, 0.85) 50%,
+    rgba(109, 174, 3, 0.7) 70%,
+    rgba(109, 174, 3, 0.4) 100%
+  ) !important;
+  box-shadow: 
+    0 0 12px rgba(109, 174, 3, 0.4),
+    inset 0 0 8px rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-scroll-progress-mushroommate:hover .modal-scroll-progress-bar-mushroommate {
+  background: linear-gradient(
+    180deg,
+    rgba(109, 174, 3, 0.6) 0%,
+    rgba(109, 174, 3, 0.85) 30%,
+    rgba(109, 174, 3, 1) 50%,
+    rgba(109, 174, 3, 0.85) 70%,
+    rgba(109, 174, 3, 0.6) 100%
+  ) !important;
+  box-shadow: 
+    0 0 16px rgba(109, 174, 3, 0.6),
+    inset 0 0 8px rgba(255, 255, 255, 0.15) !important;
+}
+
 .modal-close-button:active {
   transform: scale(0.95);
 }

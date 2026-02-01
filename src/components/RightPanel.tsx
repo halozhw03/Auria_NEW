@@ -284,6 +284,7 @@ const RightPanel = () => {
                 src={project.image}
                 alt={project.name}
                 className="project-hero-image"
+                decoding="async"
               />
               <h3 className="project-name">{project.name}</h3>
               <p className="project-description">{project.description}</p>
@@ -313,7 +314,10 @@ const RightPanel = () => {
               {/* Close button - positioned outside modal to avoid covering content */}
               <button
                 ref={closeButtonRef}
-                className="modal-close-button"
+                className={`modal-close-button ${
+                  modalProject === 'x-heal' ? 'modal-close-button-xheal' : 
+                  modalProject === 'mushroommate' ? 'modal-close-button-mushroommate' : ''
+                }`}
                 onClick={() => setModalProject(null)}
                 aria-label="Close modal"
               >
@@ -337,7 +341,10 @@ const RightPanel = () => {
               {/* Scroll progress bar - positioned outside modal */}
               {progressBarStyle && (
                 <motion.div
-                  className="modal-scroll-progress"
+                  className={`modal-scroll-progress ${
+                    modalProject === 'x-heal' ? 'modal-scroll-progress-xheal' : 
+                    modalProject === 'mushroommate' ? 'modal-scroll-progress-mushroommate' : ''
+                  }`}
                   initial={{ scaleY: 0 }}
                   animate={{ scaleY: 1 }}
                   exit={{ scaleY: 0 }}
@@ -348,7 +355,10 @@ const RightPanel = () => {
                   style={progressBarStyle}
                 >
                   <motion.div
-                    className="modal-scroll-progress-bar"
+                    className={`modal-scroll-progress-bar ${
+                      modalProject === 'x-heal' ? 'modal-scroll-progress-bar-xheal' : 
+                      modalProject === 'mushroommate' ? 'modal-scroll-progress-bar-mushroommate' : ''
+                    }`}
                     animate={{
                       scaleY: scrollProgress,
                     }}
@@ -367,7 +377,7 @@ const RightPanel = () => {
               {/* Modal content */}
               <motion.div
                 ref={modalRef}
-                className="modal-container"
+                className={`modal-container ${modalProject === 'x-heal' ? 'modal-container-xheal' : ''}`}
                 initial={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
                 animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
                 exit={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
@@ -396,6 +406,7 @@ const RightPanel = () => {
                                 src="/images/X1.png"
                                 alt={project.name}
                                 className="modal-card-xheal-image"
+                                decoding="async"
                               />
                             </div>
                               <div className="modal-card-xheal-text">
@@ -431,11 +442,13 @@ const RightPanel = () => {
                                 src="/images/X1.2.png"
                                 alt="X1.2"
                                 className="modal-card-xheal-additional-image"
+                                decoding="async"
                               />
                               <img
                                 src="/images/X1.3.png"
                                 alt="X1.3"
                                 className="modal-card-xheal-additional-image"
+                                decoding="async"
                               />
                             </div>
                           </div>
@@ -446,11 +459,13 @@ const RightPanel = () => {
                                 src="/images/M2.png"
                                 alt="M2"
                                 className="modal-card-mushroommate-image"
+                                decoding="async"
                               />
                               <img
                                 src="/images/M2.1.png"
                                 alt="M2.1"
                                 className="modal-card-mushroommate-image"
+                                decoding="async"
                               />
                             </div>
                           </div>
