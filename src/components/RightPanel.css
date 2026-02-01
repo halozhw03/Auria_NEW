@@ -161,6 +161,40 @@
   height: 0;
 }
 
+.modal-scroll-progress {
+  position: fixed;
+  width: 3px;
+  background-color: rgba(0, 0, 0, 0.06);
+  z-index: 1002;
+  pointer-events: none;
+  border-radius: 2px;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-scroll-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(233, 30, 99, 0.4) 0%,
+    rgba(233, 30, 99, 0.7) 30%,
+    rgba(233, 30, 99, 0.85) 50%,
+    rgba(233, 30, 99, 0.7) 70%,
+    rgba(233, 30, 99, 0.4) 100%
+  );
+  border-radius: 2px;
+  box-shadow: 
+    0 0 12px rgba(233, 30, 99, 0.4),
+    inset 0 0 8px rgba(255, 255, 255, 0.1);
+  will-change: transform;
+  filter: blur(0.5px);
+}
+
 .modal-content {
   display: flex;
   flex-direction: column;
@@ -169,30 +203,14 @@
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent; /* Firefox */
+  scrollbar-width: none; /* Firefox - hide scrollbar */
+  -ms-overflow-style: none; /* IE and Edge - hide scrollbar */
 }
 
 .modal-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-content::-webkit-scrollbar:horizontal {
-  display: none;
+  display: none; /* Chrome, Safari, Opera - hide scrollbar */
+  width: 0;
   height: 0;
-}
-
-.modal-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
 }
 
 .modal-card {

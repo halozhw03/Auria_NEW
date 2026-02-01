@@ -6,8 +6,11 @@ import './RightPanel.css';
 const RightPanel = () => {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [modalProject, setModalProject] = useState<string | null>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [progressBarStyle, setProgressBarStyle] = useState<{ top: string; height: string; right: string } | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const modalContentRef = useRef<HTMLDivElement>(null);
 
   const cardVariants = {
     initial: {
@@ -59,6 +62,86 @@ const RightPanel = () => {
       image: '/images/mushroomate_hero.png',
     },
   ];
+
+  // Update progress bar position and height to match modal container
+  useEffect(() => {
+    const updateProgressBarPosition = () => {
+      if (modalRef.current && modalProject) {
+        const modalRect = modalRef.current.getBoundingClientRect();
+        setProgressBarStyle({
+          top: `${modalRect.top}px`,
+          height: `${modalRect.height}px`,
+          right: `${window.innerWidth - modalRect.right - 12}px`,
+        });
+      } else {
+        setProgressBarStyle(null);
+      }
+    };
+
+    if (modalProject) {
+      // Use requestAnimationFrame for smooth updates during animations
+      let animationFrameId: number;
+      const updateLoop = () => {
+        updateProgressBarPosition();
+        animationFrameId = requestAnimationFrame(updateLoop);
+      };
+      
+      // Start the update loop
+      animationFrameId = requestAnimationFrame(updateLoop);
+      
+      // Multiple immediate updates to catch initial positioning
+      const timeouts: NodeJS.Timeout[] = [];
+      timeouts.push(setTimeout(updateProgressBarPosition, 50));
+      timeouts.push(setTimeout(updateProgressBarPosition, 100));
+      timeouts.push(setTimeout(updateProgressBarPosition, 200));
+      timeouts.push(setTimeout(updateProgressBarPosition, 400));
+      
+      window.addEventListener('resize', updateProgressBarPosition);
+      window.addEventListener('scroll', updateProgressBarPosition);
+      
+      // Use ResizeObserver to watch for size changes
+      let resizeObserver: ResizeObserver | null = null;
+      if (modalRef.current) {
+        resizeObserver = new ResizeObserver(() => {
+          updateProgressBarPosition();
+        });
+        resizeObserver.observe(modalRef.current);
+      }
+      
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+        timeouts.forEach(timeout => clearTimeout(timeout));
+        window.removeEventListener('resize', updateProgressBarPosition);
+        window.removeEventListener('scroll', updateProgressBarPosition);
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+        setProgressBarStyle(null);
+      };
+    } else {
+      setProgressBarStyle(null);
+    }
+  }, [modalProject]);
+
+  // Track scroll progress for progress bar
+  useEffect(() => {
+    const modalContent = modalContentRef.current;
+    if (!modalContent || !modalProject) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = modalContent;
+      const totalScroll = scrollHeight - clientHeight;
+      const progress = totalScroll > 0 ? scrollTop / totalScroll : 0;
+      setScrollProgress(progress);
+    };
+
+    modalContent.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial calculation
+
+    return () => {
+      modalContent.removeEventListener('scroll', handleScroll);
+    };
+  }, [modalProject]);
 
   // Update close button position based on modal and image position
   useEffect(() => {
@@ -251,6 +334,36 @@ const RightPanel = () => {
                 </svg>
               </button>
               
+              {/* Scroll progress bar - positioned outside modal */}
+              {progressBarStyle && (
+                <motion.div
+                  className="modal-scroll-progress"
+                  initial={{ scaleY: 0 }}
+                  animate={{ scaleY: 1 }}
+                  exit={{ scaleY: 0 }}
+                  transition={{
+                    duration: 0.3,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  style={progressBarStyle}
+                >
+                  <motion.div
+                    className="modal-scroll-progress-bar"
+                    animate={{
+                      scaleY: scrollProgress,
+                    }}
+                    style={{
+                      transformOrigin: 'top',
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  />
+                </motion.div>
+              )}
+              
               {/* Modal content */}
               <motion.div
                 ref={modalRef}
@@ -275,7 +388,7 @@ const RightPanel = () => {
                   return (
                     <>
                       {/* Modal content */}
-                      <div className="modal-content">
+                      <div className="modal-content" ref={modalContentRef}>
                         {project.id === 'x-heal' ? (
                           <div className="modal-card modal-card-xheal">
                             <div className="modal-card-xheal-image-wrapper">
