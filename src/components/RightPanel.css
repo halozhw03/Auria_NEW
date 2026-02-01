@@ -85,6 +85,28 @@
   clip-path: inset(0 round 12px);
   padding: 0.5rem;
   border: 2px solid transparent;
+  background-color: transparent;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.project-spotlight {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.project-spotlight-border {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(8px);
+}
+
+.project-image-container:hover .project-spotlight {
+  opacity: 1;
+}
+
+.project-image-container:hover .project-spotlight-border {
+  opacity: 0.5;
 }
 
 .project-image-container.selected {

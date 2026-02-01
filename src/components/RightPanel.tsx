@@ -1,7 +1,117 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useMotionTemplate } from 'framer-motion';
 import './RightPanel.css';
+
+// Project card component with spotlight effect
+const ProjectCard = ({ project, selectedProject, onProjectClick }: {
+  project: { id: string; name: string; description: string; image: string };
+  selectedProject: string | null;
+  onProjectClick: (id: string) => void;
+}) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  const background = useMotionTemplate`
+    radial-gradient(
+      650px circle at ${mouseX}px ${mouseY}px,
+      rgba(255, 255, 255, 0.25),
+      rgba(255, 255, 255, 0.08) 40%,
+      transparent 80%
+    )
+  `;
+
+  const borderGlow = useMotionTemplate`
+    radial-gradient(
+      400px circle at ${mouseX}px ${mouseY}px,
+      rgba(255, 255, 255, 0.3),
+      transparent 60%
+    )
+  `;
+
+  const cardVariants = {
+    initial: {
+      backgroundColor: "rgba(0, 0, 0, 0)",
+      borderColor: "rgba(0, 0, 0, 0)",
+    },
+    hover: {
+      backgroundColor: "rgba(0, 0, 0, 0.04)",
+      borderColor: "rgba(0, 0, 0, 0.1)",
+      transition: {
+        duration: 0.2,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      className={`project-image-container ${selectedProject === project.id ? 'selected' : ''}`}
+      variants={cardVariants}
+      initial="initial"
+      whileHover="hover"
+      onClick={() => onProjectClick(project.id)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ cursor: 'pointer', position: 'relative' }}
+    >
+      {/* Main spotlight effect */}
+      <motion.div
+        className="project-spotlight"
+        style={{
+          background,
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '12px',
+          pointerEvents: 'none',
+          zIndex: 1,
+          mixBlendMode: 'overlay',
+        }}
+      />
+      {/* Border glow effect */}
+      <motion.div
+        className="project-spotlight-border"
+        style={{
+          background: borderGlow,
+          position: 'absolute',
+          inset: '-1px',
+          borderRadius: '12px',
+          pointerEvents: 'none',
+          zIndex: 0,
+          opacity: 0.5,
+        }}
+      />
+      <div style={{ position: 'relative', zIndex: 2 }}>
+        <img
+          src={project.image}
+          alt={project.name}
+          className="project-hero-image"
+          decoding="async"
+        />
+        <h3 className="project-name">{project.name}</h3>
+        <p className="project-description">{project.description}</p>
+      </div>
+    </motion.div>
+  );
+};
 
 const RightPanel = () => {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
@@ -11,36 +121,6 @@ const RightPanel = () => {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const modalContentRef = useRef<HTMLDivElement>(null);
-
-  const cardVariants = {
-    initial: {
-      scale: 1,
-    },
-    hover: {
-      scale: 1.01,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 25,
-      },
-    },
-    selected: {
-      scale: 1.03,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 25,
-      },
-    },
-    selectedHover: {
-      scale: 1.04,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 25,
-      },
-    },
-  };
 
   const projects = [
     {
@@ -268,27 +348,11 @@ const RightPanel = () => {
         </motion.div>
         {projects.map((project) => (
           <motion.div key={project.id} className="content-section" layout>
-            <motion.div
-              className={`project-image-container ${selectedProject === project.id ? 'selected' : ''}`}
-              layout
-              variants={cardVariants}
-              initial="initial"
-              animate={selectedProject === project.id ? 'selected' : 'initial'}
-              whileHover={selectedProject === project.id ? 'selectedHover' : 'hover'}
-              onClick={() => {
-                setModalProject(project.id);
-              }}
-              style={{ cursor: 'pointer' }}
-            >
-              <img
-                src={project.image}
-                alt={project.name}
-                className="project-hero-image"
-                decoding="async"
-              />
-              <h3 className="project-name">{project.name}</h3>
-              <p className="project-description">{project.description}</p>
-            </motion.div>
+            <ProjectCard
+              project={project}
+              selectedProject={selectedProject}
+              onProjectClick={(id) => setModalProject(id)}
+            />
           </motion.div>
         ))}
       </motion.div>
