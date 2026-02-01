@@ -3,10 +3,11 @@
   left: 0;
   width: 50%;
   height: 100vh;
-  overflow: hidden;
-  overflow-x: hidden;
+  overflow: visible;
+  overflow-x: visible;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   padding: 3rem;
   background-color: var(--primary-color);
   touch-action: pan-y;
@@ -23,101 +24,111 @@
   height: 0;
 }
 
-.tagline-container {
-  position: relative;
-  max-width: 90%;
+.text-list-container {
+  width: 100%;
+  max-width: 600px;
 }
 
-.tagline {
-  font-family: var(--font-family);
-  font-weight: 300;
-  font-size: 36px;
-  line-height: 1.2;
+.text-item-wrapper {
+  position: relative;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.text-item-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+.text-item {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: clamp(24px, 4vw, 48px);
+  line-height: 1.1;
   color: var(--text-color);
   position: relative;
   z-index: 1;
-  padding-top: 120px;
-}
-
-.sleeping-dog {
-  position: absolute;
-  top: -10px;
-  left: -40px;
-  width: 180px;
-  height: auto;
-  z-index: 2;
-  object-fit: contain;
-  transform: rotate(-5deg);
-}
-
-.social-icons {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-  align-items: flex-start;
-}
-
-.social-icon {
-  width: 40px;
-  height: 40px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border: 1px solid var(--text-color);
-  background-color: transparent;
-  color: var(--text-color);
-  text-decoration: none;
-  transition: all 0.3s ease;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.text-content {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  white-space: nowrap;
+}
+
+.text-number {
+  font-size: clamp(24px, 4vw, 48px);
+  font-weight: 600;
   flex-shrink: 0;
+  width: 1.2em;
+  display: inline-block;
 }
 
-.social-icon:hover {
-  background-color: var(--text-color);
-  color: var(--primary-color);
+.text-content {
+  font-size: clamp(24px, 4vw, 48px);
+  font-weight: 600;
 }
 
-.social-icon svg {
-  width: 20px;
-  height: 20px;
+.cursor-tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 16px 24px;
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-line;
+  pointer-events: none;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  transform: translate(-50%, -120%);
+  max-width: 240px;
+  overflow: visible;
 }
 
 @media (max-width: 1200px) {
-  .tagline {
-    font-size: 28px;
-    padding-top: 100px;
+  .left-panel {
+    padding: 2rem;
   }
   
-  .sleeping-dog {
-    width: 150px;
-    top: -5px;
-    left: -35px;
+  .cursor-tooltip {
+    font-size: 13px;
+    padding: 10px 16px;
   }
 }
 
 @media (max-width: 768px) {
-  .tagline {
-    font-size: 22px;
-    padding-top: 80px;
+  .left-panel {
+    padding: 1.5rem;
   }
   
-  .sleeping-dog {
-    width: 120px;
-    top: 0px;
-    left: -30px;
+  .text-item-wrapper {
+    margin-bottom: 0.25rem;
+  }
+  
+  .text-item-wrapper:last-child {
+    margin-bottom: 0;
   }
 
-  .social-icons {
-    margin-top: 10px;
-    gap: 10px;
+  .cursor-tooltip {
+    font-size: 12px;
+    padding: 8px 14px;
   }
+}
 
-  .social-icon {
-    width: 36px;
-    height: 36px;
+@media (max-width: 480px) {
+  .left-panel {
+    padding: 1rem;
   }
-
-  .social-icon svg {
-    width: 18px;
-    height: 18px;
+  
+  .text-item {
+    gap: 0.3rem;
   }
 }
