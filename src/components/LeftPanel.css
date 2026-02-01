@@ -4,10 +4,23 @@
   width: 50%;
   height: 100vh;
   overflow: hidden;
+  overflow-x: hidden;
   display: flex;
   align-items: flex-end;
   padding: 3rem;
   background-color: var(--primary-color);
+  touch-action: pan-y;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.left-panel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.left-panel::-webkit-scrollbar:horizontal {
+  display: none;
+  height: 0;
 }
 
 .tagline-container {

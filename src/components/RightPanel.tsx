@@ -1,9 +1,13 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import './RightPanel.css';
 
 const RightPanel = () => {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [modalProject, setModalProject] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const cardVariants = {
     initial: {
@@ -56,6 +60,115 @@ const RightPanel = () => {
     },
   ];
 
+  // Update close button position based on modal and image position
+  useEffect(() => {
+    const updateButtonPosition = () => {
+      if (modalRef.current && closeButtonRef.current) {
+        const button = closeButtonRef.current;
+        
+        // Find the image element inside modal
+        const imageElement = modalRef.current.querySelector('.modal-card-xheal-image') as HTMLImageElement;
+        
+        if (imageElement) {
+          const imageRect = imageElement.getBoundingClientRect();
+          // Position button near the right edge of the image, aligned with top
+          // 24px offset from top and right edge
+          button.style.top = `${imageRect.top + 24}px`;
+          button.style.right = `${window.innerWidth - imageRect.right + 24}px`;
+          // Show button only after position is set
+          button.style.opacity = '1';
+          button.style.visibility = 'visible';
+        } else {
+          // Fallback to modal position if image not found
+          const modalRect = modalRef.current.getBoundingClientRect();
+          button.style.top = `${modalRect.top + 24}px`;
+          button.style.right = `${window.innerWidth - modalRect.right + 24}px`;
+          button.style.opacity = '1';
+          button.style.visibility = 'visible';
+        }
+      }
+    };
+
+    if (modalProject) {
+      // Multiple updates to ensure position is correct after DOM changes
+      const timeouts: NodeJS.Timeout[] = [];
+      
+      // Immediate update
+      updateButtonPosition();
+      
+      // Updates with delays to catch DOM changes
+      timeouts.push(setTimeout(updateButtonPosition, 50));
+      timeouts.push(setTimeout(updateButtonPosition, 100));
+      timeouts.push(setTimeout(updateButtonPosition, 200));
+      timeouts.push(setTimeout(updateButtonPosition, 300));
+      
+      // Wait for image to load, then update position
+      const imageElement = modalRef.current?.querySelector('.modal-card-xheal-image') as HTMLImageElement;
+      
+      if (imageElement) {
+        if (imageElement.complete) {
+          // Image already loaded
+          updateButtonPosition();
+        } else {
+          // Wait for image to load
+          imageElement.addEventListener('load', updateButtonPosition, { once: true });
+        }
+      }
+      
+      window.addEventListener('resize', updateButtonPosition);
+      window.addEventListener('scroll', updateButtonPosition);
+      
+      // Use MutationObserver to watch for image position changes
+      const observer = new MutationObserver(() => {
+        // Debounce the update
+        setTimeout(updateButtonPosition, 10);
+      });
+      
+      if (modalRef.current) {
+        observer.observe(modalRef.current, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['style', 'class'],
+          characterData: false
+        });
+      }
+      
+      // Use ResizeObserver to watch for size changes
+      let resizeObserver: ResizeObserver | null = null;
+      if (modalRef.current) {
+        resizeObserver = new ResizeObserver(() => {
+          updateButtonPosition();
+        });
+        resizeObserver.observe(modalRef.current);
+      }
+      
+      return () => {
+        timeouts.forEach(timeout => clearTimeout(timeout));
+        window.removeEventListener('resize', updateButtonPosition);
+        window.removeEventListener('scroll', updateButtonPosition);
+        observer.disconnect();
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+        if (imageElement) {
+          imageElement.removeEventListener('load', updateButtonPosition);
+        }
+        // Hide button when modal closes
+        if (closeButtonRef.current) {
+          closeButtonRef.current.style.opacity = '0';
+          closeButtonRef.current.style.visibility = 'hidden';
+        }
+      };
+    } else {
+      // Hide button when modal is closed
+      if (closeButtonRef.current) {
+        closeButtonRef.current.style.opacity = '0';
+        closeButtonRef.current.style.visibility = 'hidden';
+      }
+    }
+  }, [modalProject]);
+
   return (
     <motion.div
       className="right-panel"
@@ -79,7 +192,9 @@ const RightPanel = () => {
               initial="initial"
               animate={selectedProject === project.id ? 'selected' : 'initial'}
               whileHover={selectedProject === project.id ? 'selectedHover' : 'hover'}
-              onClick={() => setSelectedProject(selectedProject === project.id ? null : project.id)}
+              onClick={() => {
+                setModalProject(project.id);
+              }}
               style={{ cursor: 'pointer' }}
             >
               <img
@@ -93,6 +208,144 @@ const RightPanel = () => {
           </motion.div>
         ))}
       </motion.div>
+
+      {/* Modal */}
+      {createPortal(
+        <AnimatePresence>
+          {modalProject && (
+            <>
+              {/* Backdrop with blur */}
+              <motion.div
+                className="modal-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: 0.3,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                onClick={() => setModalProject(null)}
+              />
+              
+              {/* Close button - positioned outside modal to avoid covering content */}
+              <button
+                ref={closeButtonRef}
+                className="modal-close-button"
+                onClick={() => setModalProject(null)}
+                aria-label="Close modal"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 6L6 18M6 6L18 18"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              
+              {/* Modal content */}
+              <motion.div
+                ref={modalRef}
+                className="modal-container"
+                initial={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
+                animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+                exit={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
+                transition={{
+                  duration: 0.4,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                style={{
+                  position: "fixed",
+                  top: "50%",
+                  left: "50%",
+                }}
+              >
+                {(() => {
+                  const project = projects.find(p => p.id === modalProject);
+                  if (!project) return null;
+                  
+                  return (
+                    <>
+                      {/* Modal content */}
+                      <div className="modal-content">
+                        {project.id === 'x-heal' ? (
+                          <div className="modal-card modal-card-xheal">
+                            <div className="modal-card-xheal-image-wrapper">
+                              <img
+                                src="/images/X1.png"
+                                alt={project.name}
+                                className="modal-card-xheal-image"
+                              />
+                            </div>
+                              <div className="modal-card-xheal-text">
+                                <div className="modal-card-xheal-header">
+                                  <h1 className="modal-card-xheal-title">
+                                    X-Heal | ACL Rehab System
+                                  </h1>
+                                </div>
+                              <div className="modal-card-xheal-main-content">
+                                <p className="modal-card-xheal-description">
+                                  A connected rehab system combining wearable sensors, real-time feedback, and clinician dashboards to improve post-surgery recovery.
+                                </p>
+                                <div className="modal-card-xheal-details">
+                                  <div className="modal-card-xheal-section">
+                                    <h3 className="modal-card-xheal-section-title">My Role</h3>
+                                    <p className="modal-card-xheal-section-content">Lead UX Designer & Full-Stack Developer</p>
+                                  </div>
+                                  <div className="modal-card-xheal-section">
+                                    <h3 className="modal-card-xheal-section-title">Highlights</h3>
+                                    <ul className="modal-card-xheal-highlights">
+                                      <li>UX Design</li>
+                                      <li>React + Firebase</li>
+                                      <li>BLE Integration</li>
+                                      <li>IoT System Architecture</li>
+                                      <li>Sponsored by T-Mobile x UW GIX</li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="modal-card-xheal-images">
+                              <img
+                                src="/images/X1.2.png"
+                                alt="X1.2"
+                                className="modal-card-xheal-additional-image"
+                              />
+                              <img
+                                src="/images/X1.3.png"
+                                alt="X1.3"
+                                className="modal-card-xheal-additional-image"
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="modal-card">
+                            <div className="modal-card-header">
+                              <h3 className="modal-card-title">{project.name}</h3>
+                            </div>
+                            <div className="modal-card-body">
+                              <p className="modal-card-description">{project.description}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </motion.div>
   );
 };
