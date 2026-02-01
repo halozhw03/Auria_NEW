@@ -23,7 +23,12 @@ const LeftPanel = ({ onAvatarClick, isNavOpen }: { onAvatarClick: () => void; is
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [hoveredTextRef, setHoveredTextRef] = useState<HTMLDivElement | null>(null);
   const [scrambledTexts, setScrambledTexts] = useState<string[]>(textItems.map(item => item.text));
+  const [showIntro, setShowIntro] = useState(true);
+  const [showButton, setShowButton] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
+  const textListRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Motion values for smooth cursor tracking
   const cursorX = useMotionValue(0);
@@ -33,6 +38,105 @@ const LeftPanel = ({ onAvatarClick, isNavOpen }: { onAvatarClick: () => void; is
   const springConfig = { stiffness: 300, damping: 28, restDelta: 0.00001 };
   const x = useSpring(cursorX, springConfig);
   const y = useSpring(cursorY, springConfig);
+
+  // Intro animation on initial load
+  useEffect(() => {
+    if (!introRef.current || !textListRef.current) return;
+
+    const tl = gsap.timeline();
+
+    // Initially hide the text list
+    gsap.set(textListRef.current, { opacity: 0, y: 20 });
+
+    // Animate intro text
+    tl.fromTo(
+      introRef.current,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }
+    )
+      .call(() => {
+        setShowButton(true);
+      }, [], '+=0');
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
+
+  // Button entrance animation
+  useEffect(() => {
+    if (!buttonRef.current || !showButton) return;
+
+    const button = buttonRef.current;
+
+    // Fade in animation
+    gsap.fromTo(
+      button,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.5, ease: 'power2.out' }
+    );
+
+    return () => {
+      gsap.killTweensOf(button);
+    };
+  }, [showButton]);
+
+  // Button hover animation only (entrance handled by main timeline)
+  useEffect(() => {
+    if (!buttonRef.current || !showButton) return;
+
+    const button = buttonRef.current;
+
+    // Hover animations only
+    const handleMouseEnter = () => {
+      gsap.to(button, {
+        scale: 1.05,
+        borderColor: '#000000',
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(button, {
+        scale: 1,
+        borderColor: '#000000',
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    };
+
+    button.addEventListener('mouseenter', handleMouseEnter);
+    button.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      button.removeEventListener('mouseenter', handleMouseEnter);
+      button.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [showButton]);
+
+  // Handle button click to enter main content
+  const handleEnterClick = () => {
+    if (!introRef.current || !buttonRef.current || !textListRef.current) return;
+
+    const tl = gsap.timeline();
+
+    // Animate out intro and button
+    tl.to([introRef.current, buttonRef.current], {
+      opacity: 0,
+      y: -30,
+      duration: 0.5,
+      ease: 'power2.in',
+      stagger: 0.05,
+      onComplete: () => setShowIntro(false)
+    })
+      .to(textListRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }, '-=0.2');
+  };
 
   // GSAP animations for avatar interactivity
   useEffect(() => {
@@ -207,9 +311,9 @@ const LeftPanel = ({ onAvatarClick, isNavOpen }: { onAvatarClick: () => void; is
         damping: 30,
       }}
     >
-      {/* Avatar fixed in bottom left corner - hide when nav is open */}
+      {/* Avatar fixed in bottom left corner - only show after intro */}
       <AnimatePresence>
-        {!isNavOpen && (
+        {!isNavOpen && !showIntro && (
           <motion.div 
             ref={avatarRef}
             className="avatar-container" 
@@ -229,7 +333,33 @@ const LeftPanel = ({ onAvatarClick, isNavOpen }: { onAvatarClick: () => void; is
         )}
       </AnimatePresence>
 
-      <div className="text-list-container">
+      {/* Intro text - shown on initial load */}
+      {showIntro && (
+        <div ref={introRef} className="intro-text">
+          <span className="intro-greeting">Hi, I'm Auria Zhang.</span>
+          <br />
+          <span className="intro-description">
+            A UX designer and product thinker
+            <br />
+            crafting intuitive systems across digital interfaces and connected devices.
+          </span>
+        </div>
+      )}
+
+      {/* Enter button - shown after intro animation */}
+      {showIntro && showButton && (
+        <motion.button
+          ref={buttonRef}
+          className="enter-button"
+          onClick={handleEnterClick}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span className="button-text">Enter</span>
+          <span className="button-arrow">→</span>
+        </motion.button>
+      )}
+
+      <div ref={textListRef} className="text-list-container">
         {textItems.map((item, index) => (
           <div
             key={index}
