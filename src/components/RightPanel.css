@@ -64,6 +64,16 @@
 .project-image-container {
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  padding: 0.5rem;
+  border: 2px solid transparent;
+}
+
+.project-image-container.selected {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .project-hero-image {
