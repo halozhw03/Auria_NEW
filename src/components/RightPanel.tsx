@@ -439,6 +439,21 @@ const RightPanel = () => {
                               />
                             </div>
                           </div>
+                        ) : project.id === 'mushroommate' ? (
+                          <div className="modal-card modal-card-mushroommate">
+                            <div className="modal-card-mushroommate-images">
+                              <img
+                                src="/images/M2.png"
+                                alt="M2"
+                                className="modal-card-mushroommate-image"
+                              />
+                              <img
+                                src="/images/M2.1.png"
+                                alt="M2.1"
+                                className="modal-card-mushroommate-image"
+                              />
+                            </div>
+                          </div>
                         ) : (
                           <div className="modal-card">
                             <div className="modal-card-header">
