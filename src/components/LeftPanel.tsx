@@ -5,17 +5,25 @@ const LeftPanel = () => {
   return (
     <motion.div
       className="left-panel"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1, ease: "easeOut" }}
+      layout
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+      }}
     >
       <motion.div
-        className="tagline"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+        className="tagline-container"
+        layout
       >
-        Designing connected experiences where empathy meets execution.
+        <img 
+          src="/images/sleeping_dog.png" 
+          alt="Sleeping dog" 
+          className="sleeping-dog"
+        />
+        <div className="tagline">
+          Designing connected experiences where empathy meets execution.
+        </div>
       </motion.div>
     </motion.div>
   );
