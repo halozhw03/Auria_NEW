@@ -338,7 +338,7 @@ const RightPanel = () => {
     >
       <motion.div className="right-content" layout>
         <motion.div className="content-section" layout>
-          <h2>Selected Works</h2>
+          <h2>Scroll to see my works</h2>
         </motion.div>
         {projects.map((project) => (
           <motion.div key={project.id} className="content-section" layout>
