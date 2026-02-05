@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue, useMotionTemplate } from 'framer-motion';
 import gsap from 'gsap';
+import { GlassSurface } from './GlassSurface';
 import './RightPanel.css';
 
 // Global scroll handler component
@@ -486,6 +487,37 @@ const RightPanel = ({ isNavOpen, onCloseNav, isMainContentVisible }: { isNavOpen
         }}
       >
       <motion.div className="right-content" layout>
+        {/* Liquid Glass Nav Bar at top */}
+        <div className="top-nav-bar">
+          <GlassSurface 
+            className="nav-bar-content"
+            blur={10}
+            opacity={0.305}
+            borderRadius={20}
+            style={{
+              background: 'rgba(112, 111, 111, 0.5)',
+              border: '1.5px solid rgba(125, 125, 125, 0.67)',
+              WebkitBackdropFilter: 'blur(15px) saturate(150%)',
+              backdropFilter: 'blur(10px) saturate(180%)',
+            }}
+          >
+            <div className="nav-bar-left">
+              <div className="nav-avatar-name">
+                <div className="nav-avatar">
+                  <img 
+                    src="/images/head.png" 
+                    alt="Auria Zhang" 
+                  />
+                </div>
+                <span className="nav-name">Auria Zhang</span>
+              </div>
+            </div>
+            <div className="nav-bar-right">
+              <span className="nav-about">About Me</span>
+            </div>
+          </GlassSurface>
+        </div>
+        
         {/* Oval Navigation Bar with integrated avatar */}
         <AnimatePresence mode="wait">
           {isNavOpen && (
@@ -796,7 +828,6 @@ const RightPanel = ({ isNavOpen, onCloseNav, isMainContentVisible }: { isNavOpen
           </motion.div>
         ) : (
           <motion.div className="content-section" layout>
-            <h2>View my works</h2>
             <ProjectCard
               project={projects[0]}
               selectedProject={selectedProject}
@@ -807,21 +838,6 @@ const RightPanel = ({ isNavOpen, onCloseNav, isMainContentVisible }: { isNavOpen
                 setModalProject(id);
               }}
             />
-            <motion.div 
-              className="scroll-indicator"
-              animate={{ y: [0, 10, 0] }}
-              transition={{ 
-                duration: 1.8, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-            >
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="6" r="1.5" fill="currentColor" opacity="0.6"/>
-                <circle cx="12" cy="10" r="1.5" fill="currentColor" opacity="0.8"/>
-                <path d="M8 14L12 18L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </motion.div>
           </motion.div>
         )}
         {projects.slice(1).map((project, index) => (
@@ -836,23 +852,6 @@ const RightPanel = ({ isNavOpen, onCloseNav, isMainContentVisible }: { isNavOpen
                 setModalProject(id);
               }}
             />
-            {index < projects.slice(1).length - 1 && (
-              <motion.div 
-                className="scroll-indicator"
-                animate={{ y: [0, 10, 0] }}
-                transition={{ 
-                  duration: 1.8, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
-                }}
-              >
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="6" r="1.5" fill="currentColor" opacity="0.6"/>
-                  <circle cx="12" cy="10" r="1.5" fill="currentColor" opacity="0.8"/>
-                  <path d="M8 14L12 18L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </motion.div>
-            )}
           </motion.div>
         ))}
       </motion.div>

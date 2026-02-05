@@ -2,7 +2,7 @@
   position: fixed;
   right: 0;
   top: 0;
-  width: 65%;
+  width: 72%;
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
@@ -10,8 +10,8 @@
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  scroll-padding-top: 50vh;
-  scroll-padding-bottom: 50vh;
+  scroll-padding-top: 0;
+  scroll-padding-bottom: 0;
   will-change: scroll-position;
   scroll-snap-type: y mandatory;
   z-index: 20;
@@ -56,44 +56,180 @@
 }
 
 .right-content {
-  padding: 3rem;
-  min-height: 100vh;
+  padding: 0;
+  min-height: auto;
   display: flex;
   flex-direction: column;
 }
 
+/* Top Liquid Glass Nav Bar - 滚动下来时从上方滑入 */
+.top-nav-bar {
+  position: fixed;
+  top: 2rem;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 90px;
+  z-index: 100;
+  padding: 1rem 2rem;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 0.5s ease-out, opacity 0.45s ease-out;
+}
+
+.app-container.visible .top-nav-bar {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@media (min-width: 1400px) {
+  .scroll-indicator {
+    margin-top: 1.5rem;
+  }
+  
+  .scroll-hint-bottom {
+    bottom: 3rem;
+  }
+  
+  .content-section > h2 {
+    margin-bottom: clamp(2.5rem, 6vh, 5.5rem);
+  }
+  
+  /* 大屏时整块再往下挪一点 */
+  .content-section:first-of-type {
+    padding-top: clamp(125px, 15vh, 185px);
+  }
+}
+
+.nav-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 0 2rem;
+  pointer-events: auto;
+  position: relative;
+  width: 70%;
+  max-width: 1200px;
+}
+
+
+.nav-bar-left {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-bar-right {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-about {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.nav-avatar-name {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-name {
+  font-family: 'Jua', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+.nav-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.nav-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
 .content-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem 0;
-  scroll-snap-align: center;
+  margin-bottom: 0;
+  padding: 0;
+  padding-top: 140px;
+  padding-bottom: 100px;
+  scroll-snap-align: start;
   scroll-snap-stop: always;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
   gap: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .content-section > h2 {
-  width: 85%;
-  max-width: 900px;
-  margin-top: -3rem;
-  margin-bottom: 4rem;
-  margin-left: calc((100% - 85%) / 2);
-  margin-right: auto;
-  padding: 0;
+  width: 78%;
+  max-width: 720px;
+  margin: 0 auto;
+  margin-bottom: clamp(1.75rem, 4.5vh, 4.5rem);
+  padding: 0 1rem;
   text-align: left;
   box-sizing: border-box;
+  flex-shrink: 0;
+  min-height: 0;
 }
 
 .content-section > .project-image-container {
-  width: 85%;
-  max-width: 900px;
-  margin: 2rem auto 0 auto;
-  padding: 0.5rem;
+  width: 78%;
+  max-width: 720px;
+  margin: 0 auto;
+  margin-top: 0;
+  padding: clamp(1.5rem, 3.5vw, 2.5rem);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100vh - 280px);
+}
+
+@media (max-width: 1200px) {
+  .content-section > h2 {
+    width: 90%;
+    max-width: 620px;
+  }
+  .content-section > .project-image-container {
+    width: 90%;
+    max-width: 620px;
+    max-height: min(68vh, 520px);
+  }
+  .project-hero-image {
+    max-height: min(56vh, 420px);
+  }
 }
 
 .scroll-indicator {
@@ -101,12 +237,50 @@
   align-items: center;
   justify-content: center;
   margin-top: 3rem;
+  margin-bottom: 2rem;
   color: var(--text-color);
   opacity: 0.5;
   cursor: pointer;
   transition: all 0.3s ease;
   align-self: center;
   width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+/* Scroll hint at bottom of viewport - always visible */
+.scroll-hint-bottom {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: auto;
+}
+
+.scroll-hint-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+.scroll-hint-gradient {
+  position: fixed;
+  bottom: 0;
+  left: 28%;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to top, rgba(245, 240, 231, 0.9), transparent);
+  pointer-events: none;
+  z-index: 40;
 }
 
 .scroll-indicator:hover {
@@ -212,9 +386,9 @@
 .project-hero-image {
   width: 100%;
   height: auto;
-  max-height: 500px;
+  max-height: calc(100vh - 360px);
   object-fit: contain;
-  object-position: top;
+  object-position: center;
   border-radius: 10px;
   clip-path: inset(0 round 10px);
   margin-bottom: 1rem;

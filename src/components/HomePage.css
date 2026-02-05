@@ -3,74 +3,312 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 3rem;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 3rem 3rem 3rem 7rem;
   position: relative;
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  overflow: hidden;
+  background-image: url(/images/home.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Liquid glass container - same as nav bar glass */
+.glass-container {
+  position: relative;
+  z-index: 2;
+  padding: 1.1rem 2.25rem;
+  border-radius: 20px;
+  font-family: 'Indie Flower', cursive;
+  background: rgba(112, 111, 111, 0.502);
+  backdrop-filter: blur(10px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+  border: 1.5px solid rgba(198, 198, 198, 0.67);
+  max-width: 850px;
+  width: 78%;
+  margin: 0 auto;
+  animation: liquidFloat 8s ease-in-out infinite;
+}
+
+.home-section .glass-container {
+  margin: 0;
+}
+
+@keyframes liquidFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    border-radius: 32px;
+  }
+  25% {
+    transform: translateY(-5px) scale(1.01);
+    border-radius: 35px 30px 30px 35px;
+  }
+  50% {
+    transform: translateY(0) scale(1);
+    border-radius: 30px 35px 35px 30px;
+  }
+  75% {
+    transform: translateY(5px) scale(1.01);
+    border-radius: 35px 30px 30px 35px;
+  }
+}
+
+/* Liquid glass shine effect */
+.glass-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.3) 0%,
+    transparent 70%
+  );
+  animation: liquidShine 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes liquidShine {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(180deg);
+    opacity: 0.6;
+  }
+}
+
+.glass-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.533) 0%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
 }
 
 .home-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  text-align: center;
-  max-width: 800px;
-  gap: 2rem;
+  text-align: left;
+  max-width: 100%;
+  width: 100%;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 1;
+  padding-top: 1.5rem;
 }
 
 .home-title {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Jua', sans-serif;
   font-weight: 600;
-  font-size: clamp(32px, 6vw, 72px);
-  line-height: 1.1;
-  color: var(--text-color);
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1.2;
+  color: #ffffff;
   margin: 0;
   letter-spacing: -0.02em;
 }
 
-.home-subtitle {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-weight: 400;
-  font-size: clamp(18px, 3vw, 28px);
-  line-height: 1.4;
-  color: var(--text-color);
-  margin: 0;
-  opacity: 0.8;
+.home-description-wrapper {
+  min-height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 100%;
+  width: 100%;
+  margin-top: -1.1rem;
 }
 
 .home-description {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-weight: 300;
-  font-size: clamp(16px, 2.5vw, 20px);
-  line-height: 1.6;
-  color: var(--text-color);
+  font-family: 'Jua', sans-serif;
+  font-weight: 400;
+  font-size: clamp(15px, 2.2vw, 22px);
+  line-height: 1.2;
+  color: #ffffff;
   margin: 0;
-  opacity: 0.7;
-  max-width: 600px;
+  /* opacity: 0.7; */
+  max-width: 100%;
+  text-align: left;
+}
+
+.home-main-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 2rem;
+}
+
+/* 透明悬停层：盖在背景里的人物（豆袋椅+电脑）区域，hover 显示 "Designing in progress..." */
+.home-character-zone {
+  position: absolute;
+  left: 30%;
+  right: 45%;
+  top: 15%;
+  bottom: 12%;
+  z-index: 1;
+  pointer-events: auto;
+  cursor: default;
+}
+
+/* Home dog: rem position so it doesn't drift, aspect-ratio so it doesn't stretch */
+.home-dog {
+  position: absolute;
+  right: 10rem;
+  bottom: 1rem;
+  left: auto;
+  width: clamp(140px, 18vw, 260px);
+  height: auto;
+  aspect-ratio: 1;
+  z-index: 2;
+  pointer-events: auto;
+  cursor: default;
+}
+
+/* Hover tooltips - same frosted glass as main .glass-container */
+.home-dog-bubble,
+.home-hero-bubble {
+  position: fixed;
+  padding: 14px 24px;
+  background: rgba(112, 111, 111, 0.5);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(150%);
+  border: 1.5px solid rgba(125, 125, 125, 0.67);
+  border-radius: 16px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.98);
+  line-height: 1.45;
+  z-index: 100;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+}
+
+.home-dog-bubble {
+  transform: translate(16px, -52px);
+  white-space: nowrap;
+}
+
+.home-hero-bubble {
+  transform: translate(16px, -64px);
+  max-width: 320px;
+}
+
+.home-dog:hover .home-dog-tail {
+  animation: homeTailWagFast 0.35s ease-in-out infinite;
+}
+
+/* 悬停人物区时，首页的狗尾巴也快速摇 */
+.home-section.character-zone-hovered .home-dog-tail {
+  animation: homeTailWagFast 0.35s ease-in-out infinite;
+}
+
+.home-dog-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+
+.home-dog-tail {
+  position: absolute;
+  width: 30%;
+  height: auto;
+  right: -22%;
+  bottom: 14%;
+  transform-origin: 15% 85%;
+  z-index: 1;
+  animation: homeTailWag 2.5s ease-in-out infinite;
+}
+
+@keyframes homeTailWag {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(12deg); }
+}
+
+@keyframes homeTailWagFast {
+  0%, 100% { transform: rotate(-18deg); }
+  50% { transform: rotate(22deg); }
+}
+
+.home-dog-eye {
+  position: absolute;
+  width: 9%;
+  height: 9%;
+  border-radius: 50%;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.home-dog-eye.left-eye {
+  top: 18%;
+  left: 26.5%;
+}
+
+.home-dog-eye.right-eye {
+  top: 16.5%;
+  right: 47.5%;
+  left: auto;
+}
+
+.home-dog-pupil {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 42%;
+  height: 42%;
+  background: #222;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 0.05s ease-out;
+  will-change: transform;
 }
 
 .home-scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 3rem;
-  color: var(--text-color);
-  opacity: 0.5;
+  color: #ffffff;
+  opacity: 1;
   cursor: pointer;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, color 0.2s ease;
+  z-index: 2;
 }
 
 .home-scroll-indicator:hover {
-  opacity: 0.8;
+  opacity: 1;
+  color: #ffffff;
 }
 
 .home-scroll-indicator svg {
-  width: 48px;
-  height: 48px;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+  width: 96px;
+  height: 96px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 20px rgba(0, 229, 255, 0.5));
 }
 
 @media (max-width: 768px) {
@@ -83,6 +321,6 @@
   }
   
   .home-scroll-indicator {
-    margin-top: 2rem;
+    bottom: 1.5rem;
   }
 }
